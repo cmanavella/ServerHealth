@@ -15,8 +15,8 @@ uname = platform.uname()
 print("="*40, "INFORMACIÓN BÁSICA DEL SISTEMA", "="*40)
 print(f"Sistema: {uname.system}")
 print(f"Versión: {uname.release}")
-print(f"Nombre del Equipo: {uname.node}")
-print(f"Arquitectura: {uname.machine}\n")
+import platform
+import psutil
 
 #Informacion del CPU
 print("="*40, "INFORMACIÓN DEL CPU", "="*40)
@@ -69,26 +69,27 @@ disk_io = psutil.disk_io_counters()
 print(f"Total Leído: {get_size(disk_io.read_bytes)}")
 print(f"Total Escrito: {get_size(disk_io.write_bytes)}")
 
-#CONTROL DE TEMPERATURAS
-temps = psutil.sensors_temperatures()
-print("="*40, "TEMPERATURAS", "="*40)
-if not temps:
-	print("No se pudo encontrar sensor")
-else:
-	for name, entries in temps.items():
-		print(f"{name}:")
-		for entry in entries:
-			print("   %-20s %s °C (Alto = %s °C, Critico = %s °C)" %
-				(entry.label or name, entry.current, entry.high, entry.critical))
+if uname.system != "Windows":
+	#CONTROL DE TEMPERATURAS
+	temps = psutil.sensors_temperatures()
+	print("="*40, "TEMPERATURAS", "="*40)
+	if not temps:
+		print("No se pudo encontrar sensor")
+	else:
+		for name, entries in temps.items():
+			print(f"{name}:")
+			for entry in entries:
+				print("   %-20s %s °C (Alto = %s °C, Critico = %s °C)" %
+					(entry.label or name, entry.current, entry.high, entry.critical))
 
-#CONTROL DE VENTILADORES
-fans = psutil.sensors_fans()
-print("="*40, "VENTILADORES", "="*40)
-if not fans:
-	print("No se pudo encontrar sensor")
-else:
-	for name, entries in fans.items():
-		print(f"{name}:")
-		for entry in entries:
-			print("   %-20s %s RPM" %
-				(entry.label or name, entry.current))
+	#CONTROL DE VENTILADORES
+	fans = psutil.sensors_fans()
+	print("="*40, "VENTILADORES", "="*40)
+	if not fans:
+		print("No se pudo encontrar sensor")
+	else:
+		for name, entries in fans.items():
+			print(f"{name}:")
+			for entry in entries:
+				print("   %-20s %s RPM" %
+					(entry.label or name, entry.current))
