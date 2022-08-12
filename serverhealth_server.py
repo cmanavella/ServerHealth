@@ -15,8 +15,9 @@ server_port = 1992
 try:
 	server.bind((server_host, server_port))
 except socket.error as mensaje_error:
-	print("Se produjo un error al escuchar por el puerto: ", server_port)
-	print(mensaje_error)
+	print(colored('Se produjo un error al escuchar ' +
+		'por el puerto:', 'red'), server_port)
+	print(colored(mensaje_error, 'red'))
 
 #Defino la cantidad de conexiones entrantes simultáneas. De momento solo una.
 server.listen(1)
