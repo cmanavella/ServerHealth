@@ -2,6 +2,8 @@ import socket
 import sys
 import os
 from termcolor import colored
+import platform
+import json
 
 #Instancio un objeto para poder trabajar con el Socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -29,8 +31,22 @@ while True:
 	try:
 		#Instancio un objeto cliente. Esto me premite recibir datos.
 		client, address = server.accept()
-		mensaje = "Hola Mundo"
-		client.send(mensaje.encode())
+
+		#Instancio el objeto Platform que me trae la Informacion
+		#basica del sistema operativo.
+		uname = platform.uname()
+
+		#Armo el array para enviar al cliente.
+		data = {
+			"system": uname.system,
+			"release": uname.release
+			}
+
+		#Transformo el Array en un Objeto JSON
+		data = json.dumps(data)
+
+		#Envio el Objeto JSON
+		client.send(data.encode())
 
 		#Cierro las instancias de cliente y servidor
 		client.close()
