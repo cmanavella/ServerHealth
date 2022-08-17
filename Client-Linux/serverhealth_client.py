@@ -7,7 +7,7 @@ import time
 from decimal import Decimal
 
 #Variables
-host = '192.168.1.164'
+host = 'localhost'
 port = 1992
 
 #Funcion que convierte el tamaño de hardware en Kb, Mb, Gb, Tb o Pb
