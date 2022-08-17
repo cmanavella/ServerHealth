@@ -4,10 +4,19 @@ import os
 from termcolor import colored
 import json
 import time
+from decimal import Decimal
 
 #Variables
-host = 'localhost'
+host = '192.168.1.164'
 port = 1992
+
+#Funcion que convierte el tamaño de hardware en Kb, Mb, Gb, Tb o Pb
+def get_size(bytes, suffix="B"):
+	factor = 1024
+	for unit in ["", "K", "M", "G", "T", "P"]:
+		if bytes < factor:
+			return f"{bytes:.2f}{unit}{suffix}"
+		bytes /= factor
 
 #Bucle que retiene la conexión
 while True:
@@ -33,6 +42,18 @@ while True:
 
         print(colored('Sistema:', 'cyan'), data["system"])
         print(colored('Version:', 'cyan'), data["release"])
+
+        print(colored('\nProcesador:', 'cyan'), data["processor"])
+        print(colored('Nucleos Fisicos:', 'cyan'), data["phisical_cores"])
+        print(colored('Total de Nucleos:', 'cyan'), data["total_cores"])
+        print(colored('Frecuencia Maxima:', 'cyan'), data["max_frec"], 'Mhz')
+        print(colored('Frecuencia Minima:', 'cyan'), data["min_frec"], 'Mhz')
+        print(colored('Frecuencia Actual:', 'cyan'), data["current_frec"], 'Mhz')
+
+        print(colored('\nMemoria Total:', 'cyan'), get_size(data["total_memory"]))
+        print(colored('Memoria Libre:', 'cyan'), get_size(data["free_memory"]))
+        print(colored('Memoria Usada:', 'cyan'), get_size(data["used_memory"]))
+        print(colored('Porcentaje:', 'cyan'), data["percent_memory"], '%')
 
         server.close()
         time.sleep(1)

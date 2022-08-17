@@ -4,6 +4,7 @@ import os
 from termcolor import colored
 import platform
 import json
+import psutil
 
 #Instancio un objeto para poder trabajar con el Socket
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,17 +17,11 @@ server_port = 1992
 #Con bind conecto al server. Lo hago por Try para manejar error en la escucha.
 try:
 	server.bind((server_host, server_port))
-except socket.error as mensaje_error:
-	print(colored('Se produjo un error al escuchar ' +
-		'por el puerto:', 'red'), server_port)
-	print(colored(mensaje_error, 'red'))
+	#Defino la cantidad de conexiones entrantes simultáneas. De momento solo una.
+	server.listen(1)
 
-#Defino la cantidad de conexiones entrantes simultáneas. De momento solo una.
-server.listen(1)
-
-print("Estado del Servidor [", colored('OK', 'green'), "]")
-print("Puerto de escucha:", colored(server_port, 'cyan'))
-try:
+	print("Estado del Servidor [", colored('OK', 'green'), "]")
+	print("Puerto de escucha:", colored(server_port, 'cyan'))
 	#Capturo la excepcion de cancelacion del teclado para salir del server
 	while True:
 		#Instancio un objeto cliente. Esto me premite recibir datos.
@@ -41,10 +36,22 @@ try:
 		#basica del sistema operativo.
 		uname = platform.uname()
 
+		memory = psutil.virtual_memory()
+		cpu_freq = psutil.cpu_freq()
 		#Armo el array para enviar al cliente.
 		data = {
 			"system": uname.system,
-			"release": uname.release
+			"release": uname.release,
+			"processor": uname.processor,
+			"phisical_cores": psutil.cpu_count(logical=False),
+			"total_cores": psutil.cpu_count(logical=True),
+			"max_frec": cpu_freq.max,
+			"min_frec": cpu_freq.min,
+			"current_frec": cpu_freq.current,
+			"total_memory": memory.total,
+			"free_memory": memory.available,
+			"used_memory": memory.used,
+			"percent_memory": memory.percent
 			}
 
 		#Transformo el Array en un Objeto JSON
@@ -56,6 +63,10 @@ try:
 	#Cierro las instancias de cliente y servidor
 	client.close()
 	print("El cliente se ha desconectado.")
+except socket.error as mensaje_error:
+	print(colored('Se produjo un error al escuchar ' +
+		'por el puerto:', 'red'), server_port)
+	print(colored(mensaje_error, 'red'))
 except KeyboardInterrupt:
 	print(colored('\nServidor apagado.', 'red'))
 	try:
