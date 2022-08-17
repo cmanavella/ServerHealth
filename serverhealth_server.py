@@ -26,11 +26,16 @@ server.listen(1)
 
 print("Estado del Servidor [", colored('OK', 'green'), "]")
 print("Puerto de escucha:", colored(server_port, 'cyan'))
-while True:
+try:
 	#Capturo la excepcion de cancelacion del teclado para salir del server
-	try:
+	while True:
 		#Instancio un objeto cliente. Esto me premite recibir datos.
 		client, address = server.accept()
+
+		client_data = client.recv(1024)
+
+		if not client_data:
+			break
 
 		#Instancio el objeto Platform que me trae la Informacion
 		#basica del sistema operativo.
@@ -48,13 +53,14 @@ while True:
 		#Envio el Objeto JSON
 		client.send(data.encode())
 
-		#Cierro las instancias de cliente y servidor
-		client.close()
-	except KeyboardInterrupt:
-		print(colored('\nServidor apagado.', 'red'))
-		try:
-			sys.exit(0)
-			server.close()
-		except SystemExit:
-			os._exit(0)
-			server.close()
+	#Cierro las instancias de cliente y servidor
+	client.close()
+	print("El cliente se ha desconectado.")
+except KeyboardInterrupt:
+	print(colored('\nServidor apagado.', 'red'))
+	try:
+		sys.exit(0)
+		server.close()
+	except SystemExit:
+		os._exit(0)
+		server.close()

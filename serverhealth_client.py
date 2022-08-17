@@ -20,20 +20,13 @@ while True:
     #Trato de conectar con el servidor
     try:
         server.connect((host, port))
-    except socket.error as mensaje_refused:
-        print(colored('Se produjo un error al intentar conectar con ' +
-            'host:', 'red'), host, colored('por el puerto:', 'red'),
-            port)
-        print(colored(mensaje_refused, 'red'))
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
 
-    print("Conectado al servidor [", colored('OK', 'green'), "]")
+        print("Conectado al servidor [", colored('OK', 'green'), "]")
 
-    #Capturo la excepcion de cancelacion del teclado para salir del server
-    try:
+        #Envio esto al servidor para que sepa que estoy conectado
+        server.sendall(b"get")
+
+        #Recibo los datos del servidor
         data = server.recv(1024)
         data = data.decode("utf-8")
         data = json.loads(data)
@@ -43,7 +36,18 @@ while True:
 
         server.close()
         time.sleep(1)
+    except socket.error as mensaje_refused:
+        print(colored('Se produjo un error al intentar conectar con ' +
+            'host:', 'red'), host, colored('por el puerto:', 'red'),
+            port)
+        print(colored(mensaje_refused, 'red'))
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
+    #Capturo la excepcion de cancelacion del teclado para salir del server
     except KeyboardInterrupt:
+        print(colored('\nConexion interrumpida.', 'red'))
         try:
             sys.exit(0)
             server.close()
