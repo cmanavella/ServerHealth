@@ -4,11 +4,17 @@ import os
 from termcolor import colored
 import json
 import time
-from decimal import Decimal
+from configparser import ConfigParser
+
+#Armo el objeto que me permite leer o modificar el config file
+config_file = ConfigParser()
+config_file.read("config.ini")
+#Obtengo los datos del server
+server_info = config_file["SERVERCONFIG"]
 
 #Variables
-host = 'localhost'
-port = 1992
+host = server_info["host"]
+port = int(server_info["port"])
 
 #Funcion que convierte el tamaño de hardware en Kb, Mb, Gb, Tb o Pb
 def get_size(bytes, suffix="B"):
